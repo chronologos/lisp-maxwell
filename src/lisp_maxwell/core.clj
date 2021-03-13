@@ -47,7 +47,7 @@
 (defn eval_
   "Handles forms."
   [e a]
-  (cond (or  (symbol? e) (int? e)) (assoc_ e a)
+  (cond (or (symbol? e) (int? e)) (assoc_ e a)
         (symbol? (car e)) (cond (= (car e) 'quote_) (cadr e)
                                 (= (car e) 'cond_) (evcon (cdr e) a)
                                 :else (apply_ (car e) (evlis (cdr e) a) a))
@@ -62,7 +62,9 @@
 ;; (defn evlis [m a]
 ;;   (cond_  ((empty? m) '()) (true (cons (eval_ (car m) a) (evlis (cdr m) a)))))
 
-(defn evlis [m a]
+(defn evlis
+  "Recursively evaluate a list."
+  [m a]
   (cond (empty? m) '()
         :else (cons (eval_ (car m) a) (evlis (cdr m) a))))
 
@@ -85,13 +87,3 @@
   (cond (= (caar y) x) (cadar y)
         (empty? y) '()
         :else (assoc_ x (cdr y))))
-
-(evalquote_ '(eq (x) (x)))
-(evalquote_ '(eq 1 2))
-(evalquote_ '(eq 1 1))
-(evlis '(a b) '((a c) (b 2)))
-(eval_ '(car (quote_ (a b))) '(a a b b))
-(assert (=  (eval_ '(car (quote_ (1 2))) '((1 1) (2 2))) 1))
-(evalquote_ '((lambda (x) x) a))
-(eval_ '((label f (lambda (x) (car x))) (quote_ (a b))) '((a 1)))
-(eval_ '(eq 1 1) '((1 1)))
